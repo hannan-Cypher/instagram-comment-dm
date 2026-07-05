@@ -1,0 +1,41 @@
+// ─────────────────────────────────────────────────
+// Prisma Schema — Instagram Comment-to-DM
+// ─────────────────────────────────────────────────
+//
+// ProcessedComment is the idempotency store and audit log.
+// The `commentId` UNIQUE constraint ensures we never
+// process the same webhook event twice — even if Meta
+// redelivers the payload (which they do).
+//
+// Status lifecycle:
+//   pending   → inserted before enqueue, not yet sent
+//   sent      → DM API returned success
+//   expired   → 24h window elapsed before send
+//   failed    → API errored after all retries exhausted
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ProcessedComment {
+  id        Int      @id @default(autoincrement())
+  commentId String   @unique                                      // Meta comment ID — UNIQUE for idempotency
+  igsid     String                                                // Instagram-Scoped User ID of the commenter
+  commentText String                                              // Raw comment text (for audit)
+  status    String   @default("pending")                          // pending | sent | expired | failed
+  createdAt DateTime @default(now())                              // When the webhook was first received
+  updatedAt DateTime @updatedAt                                   // When last updated
+
+  // Why indexes matter:
+  //   - commentId unique index is automatic from @unique
+  //   - status index helps the worker query expired-eligible jobs if needed
+  //   - createdAt index helps audit queries and 24h-window checks
+
+  @@index([status])
+  @@index([createdAt])
+}
