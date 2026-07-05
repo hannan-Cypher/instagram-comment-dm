@@ -61,6 +61,61 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "instagram-comment-dm" });
 });
 
+// ── Privacy Policy (required by Meta to go Live) ──
+app.get("/privacy", (_req, res) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Zauq e Zaika</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #222; }
+    h1 { font-size: 1.8rem; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+    h2 { font-size: 1.2rem; margin-top: 28px; color: #444; }
+    p { margin: 8px 0; }
+    .updated { color: #888; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: July 5, 2026</p>
+
+  <h2>1. Overview</h2>
+  <p>Zauq e Zaika ("we", "us") operates an Instagram automation service that sends direct messages to users who comment specific keywords on our posts. This policy explains what data we collect and how we use it.</p>
+
+  <h2>2. Data We Collect</h2>
+  <p>When you comment on our Instagram posts, we receive the following data from Meta's webhook API:</p>
+  <ul>
+    <li>Your Instagram-scoped user ID (IGSID)</li>
+    <li>The text of your comment</li>
+    <li>The comment ID and timestamp</li>
+  </ul>
+  <p>We do <strong>not</strong> collect your email, phone number, real name, or any other personal information.</p>
+
+  <h2>3. How We Use Your Data</h2>
+  <p>Your data is used solely to:</p>
+  <ul>
+    <li>Detect trigger keywords in your comment</li>
+    <li>Send you a one-time direct message with the requested content</li>
+    <li>Prevent duplicate messages (idempotency)</li>
+  </ul>
+
+  <h2>4. Data Storage &amp; Retention</h2>
+  <p>Comment records are stored in a secure PostgreSQL database. We retain records for up to 90 days for operational purposes, after which they are deleted.</p>
+
+  <h2>5. Data Sharing</h2>
+  <p>We do <strong>not</strong> sell, rent, or share your data with any third parties. Data is only transmitted between our server and Meta's API.</p>
+
+  <h2>6. Your Rights</h2>
+  <p>You may request deletion of your data at any time by contacting us via Instagram DM at <strong>@hannan.mohsin.514</strong>.</p>
+
+  <h2>7. Contact</h2>
+  <p>For questions about this privacy policy, message us on Instagram: <strong>@hannan.mohsin.514</strong></p>
+</body>
+</html>`);
+});
+
 // ── Webhook routes ──
 app.use(webhookRouter);
 
